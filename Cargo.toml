@@ -1,0 +1,7 @@
+[workspace]
+members = [
+    "chain_observers",
+    "pubsub",
+    "executor",
+    "rest_api",
+]
