@@ -33,4 +33,23 @@ impl CardanoObserver {
             .await?;
         Ok(block)
     }
+
+    pub async fn is_transaction_confirmed(&self, tx_id: &str) -> Result<bool, reqwest::Error> {
+        let url = format!("https://cardano-mainnet.blockfrost.io/api/v0/txs/{}", tx_id);
+        let tx_status: serde_json::Value = self
+            .client
+            .get(&url)
+            .header("project_id", &self.api_key)
+            .send()
+            .await?
+            .json()
+            .await?;
+        
+        // Check if the transaction is confirmed
+        if let Some(confirmations) = tx_status.get("confirmations") {
+            return Ok(confirmations.as_u64().unwrap_or(0) > 0);
+        }
+        
+        Ok(false)
+    }
 }
